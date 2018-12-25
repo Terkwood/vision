@@ -1,1 +1,5 @@
-.env
+/target
+**/*.rs.bk
+Cargo.lock
+static/vision.js
+static/*.wasm
