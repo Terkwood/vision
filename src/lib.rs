@@ -6,8 +6,8 @@ extern crate yew;
 
 use stdweb::traits::*;
 use stdweb::unstable::TryInto;
-use stdweb::web::event::{ResourceLoadEvent, ResizeEvent};
-use stdweb::web::html_element::{CanvasElement,ImageElement};
+use stdweb::web::event::{ResizeEvent, ResourceLoadEvent};
+use stdweb::web::html_element::{CanvasElement, ImageElement};
 use stdweb::web::{document, window, CanvasRenderingContext2d};
 use yew::prelude::*;
 
@@ -47,7 +47,7 @@ impl Component for Model {
                     .unwrap();
 
                 draw(canvas.clone());
-                
+
                 window().add_event_listener(enclose!( (canvas) move |_: ResizeEvent| {
                     draw(canvas.clone());
                 }));
@@ -99,7 +99,7 @@ fn magic() {
                     ctx.lineWidth = 5;
 
                     const COLORS = ["rgb(255,0,0)", "rgb(255,255,0)", "rgb(0,255,0)", "rgb(0,255,255)"];
-                    predictions.forEach(function(p, i) {     
+                    predictions.forEach(function(p, i) {
                         ctx.beginPath();
                         ctx.strokeStyle = COLORS[i % COLORS.length];
                         ctx.rect(p.bbox[0], p.bbox[1], p.bbox[2], p.bbox[3]);
