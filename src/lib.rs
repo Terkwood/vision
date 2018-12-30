@@ -6,9 +6,9 @@ extern crate yew;
 
 use stdweb::traits::*;
 use stdweb::unstable::TryInto;
-use stdweb::web::event::{ResizeEvent, ResourceLoadEvent};
-use stdweb::web::html_element::{CanvasElement, ImageElement};
-use stdweb::web::{document, window, CanvasRenderingContext2d};
+use stdweb::web::event::ResizeEvent;
+use stdweb::web::html_element::CanvasElement;
+use stdweb::web::{document, window};
 use yew::prelude::*;
 
 // Shamelessly stolen from stdweb, who shamelessy stole it
@@ -52,19 +52,6 @@ impl Component for Model {
                     draw(canvas.clone());
                 }));
 
-                /* FIXME
-                // Draw an image on the canvas
-                let image = ImageElement::new();
-                image.set_src("crew.jpg");
-                
-                // WIP:  THIS NEEDS TO BE CALLED ASYNC,
-                // ONCE THE IMAGE IS FINISHED LOADING
-                // See https://github.com/DenisKolodin/yew#agents---actors-model-inspired-by-erlang-and-actix
-                let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
-                context.draw_image(image, 10.0, 10.0).unwrap();
-                js!{console.log("ok");}
-                */
-
                 true
             }
         }
@@ -86,12 +73,8 @@ fn magic() {
         img.addEventListener("load", function() {
             ctx.drawImage(img, 10, 10);
 
-            // Notice there is no 'import' statement. 'cocoSsd' and 'tf' is
-            // available on the index-page because of the script tag above.
-
-            // Load the model.
             cocoSsd.load().then(model => {
-                // detect objects in the image.
+
                 model.detect(img).then(predictions => {
                     console.log("Found " + predictions.length + " predictions");
                     var c = document.getElementById("canvas");
@@ -104,6 +87,8 @@ fn magic() {
                         ctx.strokeStyle = COLORS[i % COLORS.length];
                         ctx.rect(p.bbox[0], p.bbox[1], p.bbox[2], p.bbox[3]);
                         ctx.stroke();
+
+                        console.log(JSON.stringify(p));
                     });
                 });
             });
