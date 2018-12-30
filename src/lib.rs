@@ -70,7 +70,7 @@ fn magic() {
         var ctx = canvas.getContext("2d");
         var img = new Image();
         
-        img.src = "rusty.jpg";
+        img.src = "image.jpg";
         img.addEventListener("load", function() {
             ctx.drawImage(img, 10, 10);
 
