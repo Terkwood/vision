@@ -69,6 +69,7 @@ fn magic() {
         var canvas = document.getElementById("canvas");
         var ctx = canvas.getContext("2d");
         var img = new Image();
+        
         img.src = "rusty.jpg";
         img.addEventListener("load", function() {
             ctx.drawImage(img, 10, 10);
@@ -76,7 +77,6 @@ fn magic() {
             cocoSsd.load().then(model => {
 
                 model.detect(img).then(predictions => {
-                    console.log("Found " + predictions.length + " predictions");
                     var c = document.getElementById("canvas");
                     var ctx = c.getContext("2d");
                     ctx.lineWidth = 5;
@@ -84,11 +84,16 @@ fn magic() {
                     const COLORS = ["rgb(255,0,0)", "rgb(255,255,0)", "rgb(0,255,0)", "rgb(0,255,255)"];
                     predictions.forEach(function(p, i) {
                         ctx.beginPath();
-                        ctx.strokeStyle = COLORS[i % COLORS.length];
+                        var color = COLORS[i % COLORS.length];
+
+                        ctx.strokeStyle = color;
                         ctx.rect(p.bbox[0], p.bbox[1], p.bbox[2], p.bbox[3]);
                         ctx.stroke();
 
-                        console.log(JSON.stringify(p));
+                        ctx.font = "30px Arial";
+                        ctx.fillStyle = color;
+                        const TEXT_OFFSET = -10;
+                        ctx.fillText(p.class, p.bbox[0], p.bbox[1] + TEXT_OFFSET);
                     });
                 });
             });
