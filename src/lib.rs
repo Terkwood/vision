@@ -1,4 +1,4 @@
-#![recursion_limit = "512"]
+#![recursion_limit = "128"]
 #[macro_use]
 extern crate stdweb;
 #[macro_use]
@@ -26,14 +26,14 @@ pub enum Msg {
     Init,
 }
 
-pub struct Model {}
+pub struct State {}
 
-impl Component for Model {
+impl Component for State {
     type Message = Msg;
     type Properties = ();
 
     fn create(_: Self::Properties, mut _link: ComponentLink<Self>) -> Self {
-        Model {}
+        State {}
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
@@ -71,7 +71,7 @@ fn js_draw() {
     }
 }
 
-impl Renderable<Model> for Model {
+impl Renderable<State> for State {
     fn view(&self) -> Html<Self> {
         html! {
             <canvas id="canvas",></canvas>

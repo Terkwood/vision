@@ -1,3 +1,9 @@
+var checkExist = setInterval(function() {
+    if ($('#canvas').length) {
+       clearInterval(checkExist);
+    }
+ }, 50);
+
 function draw() {
     var canvas = document.getElementById("canvas");
         
