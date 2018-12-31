@@ -1,6 +1,7 @@
 var checkExist = setInterval(function() {
-    if ($('#canvas').length) {
+    if (document.getElementById("canvas")) {
        clearInterval(checkExist);
+       draw();
     }
  }, 50);
 
