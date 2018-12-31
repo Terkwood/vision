@@ -6,9 +6,7 @@ var checkExist = setInterval(function() {
  }, 50);
 
 function draw() {
-    console.log("Enter draw");
     _.debounce(() => {
-        console.log("Enter debounce closure");
         var canvas = document.getElementById("canvas");
             
         var ctx = canvas.getContext("2d");
