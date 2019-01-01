@@ -24,16 +24,31 @@ macro_rules! enclose {
 
 pub enum Msg {
     Init,
+    CamPos(Vec<u32>),
 }
 
-pub struct State {}
+#[derive(Clone)]
+pub struct CameraPosition {
+    x: u32,
+    y: u32,
+    width: u32,
+    height: u32,
+}
+
+pub struct State {
+    link: ComponentLink<State>,
+    camera_position: Option<CameraPosition>,
+}
 
 impl Component for State {
     type Message = Msg;
     type Properties = ();
 
-    fn create(_: Self::Properties, mut _link: ComponentLink<Self>) -> Self {
-        State {}
+    fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
+        State {
+            link,
+            camera_position: None,
+        }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
@@ -46,28 +61,54 @@ impl Component for State {
                     .try_into()
                     .unwrap();
 
-                draw(canvas.clone());
+                let cb = self.link.send_back(Msg::CamPos);
+
+                draw(canvas.clone(), cb.clone());
 
                 window().add_event_listener(enclose!( (canvas) move |_: ResizeEvent| {
-                    draw(canvas.clone());
+                    draw(canvas.clone(), cb.clone());
                 }));
 
                 true
             }
+            Msg::CamPos(p) => {
+                let cp = CameraPosition {
+                    x: p[0],
+                    y: p[1],
+                    width: p[2],
+                    height: p[3],
+                };
+
+                let f = {
+                    let it = cp.clone();
+                    format!(
+                        "Camera x:{} y:{} width:{} height:{}",
+                        it.x, it.y, it.width, it.height
+                    )
+                };
+                js!{console.log(@{f});}
+
+                self.camera_position = Some(cp);
+                false
+            },
         }
     }
 }
 
-fn draw(canvas: CanvasElement) {
+fn draw(canvas: CanvasElement, camera_position: Callback<Vec<u32>>) {
     canvas.set_width(canvas.offset_width() as u32);
     canvas.set_height(canvas.offset_height() as u32);
-    js_draw();
+
+    js_draw(camera_position);
 }
 
-/// See the source in `draw.js`
-fn js_draw() {
+/// See the source in `draw_bounding_boxes.js`
+fn js_draw(camera_position: Callback<Vec<u32>>) {
+    let callback = move |p: Vec<u32>| camera_position.emit(p);
+
     js! {
-        draw();
+        var cb = @{callback};
+        draw(cb);
     }
 }
 
