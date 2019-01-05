@@ -2,8 +2,7 @@
 
 ## 🚧 Caution: this project is under construction! 🚧
 
-Use your mobile or laptop device's camera to run image classification
-and object detection in near real-time.
+Use your device's camera to run object detection on the world around you.
 
 ![Bounding boxes](example.png)
 
