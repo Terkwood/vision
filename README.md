@@ -4,7 +4,7 @@
 
 Use your device's camera to run object detection on the world around you.
 
-![Bounding boxes](example.png)
+![Bounding box example](example.png)
 
 ## Developer Usage
 
