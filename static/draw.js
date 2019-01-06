@@ -61,10 +61,13 @@ function draw(cb, cameraClickCb) {
             
         var ctx = canvas.getContext("2d");
         var img = new Image();
-        img.src = "image.jpg";
+        img.src = "image.png";
 
         img.onload = function() {
-            ctx.drawImage(img, 0, 0, img.width, img.height);
+            var dx = (canvas.offsetWidth / 2) - (img.width / 2);
+            var dy = (canvas.offsetHeight / 2) - (img.height / 2);
+
+            ctx.drawImage(img, dx, dy, img.width, img.height);
             //drawCamera(canvas, cb, cameraClickCb);
 
             if (cb) {
