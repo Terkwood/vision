@@ -98,11 +98,11 @@ impl Component for State {
                 let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
                 resize_canvas(&canvas);
 
-                let cb_cam_pos = {
+                let _cb_cam_pos = {
                     let cb = self.link.send_back(Msg::CamPos);
                     move |p: Vec<u32>| cb.emit(p)
                 };
-                let cb_swap_to_video = {
+                let _cb_swap_to_video = {
                     let cb = self.link.send_back(Msg::SwapToVideo);
                     move |b: bool| cb.emit(b)
                 };
