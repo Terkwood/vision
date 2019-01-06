@@ -93,7 +93,7 @@ impl Component for State {
                 self.snapshot_data_url = Some(data_url.clone());
                 let image = ImageElement::new();
                 image.set_attribute("src", &data_url).unwrap();
-                
+
                 let canvas: CanvasElement = get_canvas();
                 let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
                 resize_canvas(&canvas);
@@ -117,9 +117,9 @@ impl Component for State {
                         ctx.scale(w, h);
                         ctx.drawImage(img, 0, 0);
                         snapshotBoundingBoxes(img, 1.0, 1.0);
-                        var cb = @{cb_cam_pos};
-                        var cameraClickCb = @{cb_swap_to_video};
-                        drawCamera(cb, cameraClickCb);
+                        //var cb = @{cb_cam_pos};
+                        //var cameraClickCb = @{cb_swap_to_video};
+                        //drawCamera(cb, cameraClickCb);
                     }
                 }
 
