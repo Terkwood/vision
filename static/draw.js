@@ -123,7 +123,7 @@ function drawBoundingBoxes(canvas, img, cameraClickCb) {
                 ctx.fillText(p.class, p.bbox[0], p.bbox[1] + TEXT_OFFSET);
             });
 
-            drawCamera(canvas, null, cameraClickCb);
+            //drawCamera(canvas, null, cameraClickCb);
         });
     });
 }
