@@ -5,7 +5,8 @@ var checkExist = setInterval(function() {
     }
  }, 50);
 
-function drawCamera(canvas, cb, cameraClickCb) {
+function drawCamera(camPositionCb, cameraClickCb) {
+    var canvas = document.querySelector("#canvas");
     var ctx = canvas.getContext("2d");
     var img = new Image();
     img.onload = function() {
@@ -15,9 +16,9 @@ function drawCamera(canvas, cb, cameraClickCb) {
         ctx.drawImage(img, dx, dy);
         registerCameraEvents(canvas, img, dx, dy, cameraClickCb);
         
-        if (cb) {
-            cb([Math.round(dx), Math.round(dy), img.width, img.height]);
-            cb.drop();
+        if (camPositionCb) {
+            camPositionCb([Math.round(dx), Math.round(dy), img.width, img.height]);
+            camPositionCb.drop();
         }
     };
 
@@ -50,11 +51,9 @@ function registerCameraEvents(canvas, img, dx, dy, cameraClickCb) {
             return;
         }
         
-        // Reset the pointer to the default
         e.target.style.cursor = 'default';
     };
 }
-
 
 function draw(cb, cameraClickCb) {
     _.debounce(() => {
@@ -64,21 +63,46 @@ function draw(cb, cameraClickCb) {
         var img = new Image();
         img.src = "image.jpg";
 
-        var scaleX = canvas.offsetWidth / img.width;
-        var scaleY = canvas.offsetHeight / img.height;
-
         img.onload = function() {
-            ctx.drawImage(img, 0, 0, img.width * scaleX, img.height * scaleY);
-            drawCamera(canvas, cb, cameraClickCb);
+            ctx.drawImage(img, 0, 0, img.width, img.height);
+            //drawCamera(canvas, cb, cameraClickCb);
 
             if (cb) {
-                drawBoundingBoxes(canvas, img, scaleX, scaleY, cameraClickCb);
+                drawBoundingBoxes(canvas, img, cameraClickCb);
             }
         };
     }, 1000)()
 }
 
-function drawBoundingBoxes(canvas, img, scaleX, scaleY, cameraClickCb) {
+
+function snapshotBoundingBoxes(img) {
+    cocoSsd.load().then(model => {
+        model.detect(img).then(predictions => {
+            var canvas = document.querySelector("#canvas");
+            var ctx = canvas.getContext("2d");
+            ctx.lineWidth = 3;
+
+            const COLORS = ["rgb(255,0,0)", "rgb(255,255,0)", "rgb(0,255,0)", "rgb(0,255,255)"];
+            predictions.forEach(function(p, i) {
+                ctx.beginPath();
+                var color = COLORS[i % COLORS.length];
+
+                ctx.strokeStyle = color;
+                ctx.rect(p.bbox[0], p.bbox[1], p.bbox[2], p.bbox[3]);
+                ctx.stroke();
+
+                ctx.font = "30px Arial";
+                ctx.fillStyle = color;
+                const TEXT_OFFSET = -10;
+                ctx.fillText(p.class, p.bbox[0], p.bbox[1] + TEXT_OFFSET);
+            });
+
+            //drawCamera(canvas, null, cameraClickCb);
+        });
+    });
+}
+
+function drawBoundingBoxes(canvas, img, cameraClickCb) {
     cocoSsd.load().then(model => {
         model.detect(img).then(predictions => {
             var ctx = canvas.getContext("2d");
@@ -90,13 +114,13 @@ function drawBoundingBoxes(canvas, img, scaleX, scaleY, cameraClickCb) {
                 var color = COLORS[i % COLORS.length];
 
                 ctx.strokeStyle = color;
-                ctx.rect(p.bbox[0] * scaleX, p.bbox[1] * scaleY, p.bbox[2] * scaleX, p.bbox[3] * scaleY);
+                ctx.rect(p.bbox[0], p.bbox[1], p.bbox[2], p.bbox[3]);
                 ctx.stroke();
 
                 ctx.font = "30px Arial";
                 ctx.fillStyle = color;
                 const TEXT_OFFSET = -10;
-                ctx.fillText(p.class, p.bbox[0] * scaleX, p.bbox[1] * scaleY + TEXT_OFFSET);
+                ctx.fillText(p.class, p.bbox[0], p.bbox[1] + TEXT_OFFSET);
             });
 
             drawCamera(canvas, null, cameraClickCb);
@@ -140,6 +164,7 @@ function takePicture(callback){
     var imageURL = canvas.toDataURL("image/png");
     
     callback(imageURL);
+    callback.drop();
 }
 
 function stopVideo(video) {

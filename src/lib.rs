@@ -6,21 +6,9 @@ extern crate yew;
 
 use stdweb::traits::*;
 use stdweb::unstable::TryInto;
-use stdweb::web::event::ResizeEvent;
 use stdweb::web::html_element::{CanvasElement, ImageElement};
-use stdweb::web::{document, window, CanvasRenderingContext2d};
+use stdweb::web::{document, CanvasRenderingContext2d};
 use yew::prelude::*;
-
-// Shamelessly stolen from stdweb, who shamelessy stole it
-// from webplatform's TodoMVC example. :-D
-macro_rules! enclose {
-    ( ($( $x:ident ),*) $y:expr ) => {
-        {
-            $(let $x = $x.clone();)*
-            $y
-        }
-    };
-}
 
 pub enum Msg {
     Init,
@@ -43,7 +31,6 @@ pub struct State {
     camera_position: Option<CameraPosition>,
     video: bool,
     snapshot_data_url: Option<String>,
-    snapshot: Option<ImageElement>,
 }
 
 impl Component for State {
@@ -56,7 +43,6 @@ impl Component for State {
             camera_position: None,
             video: false,
             snapshot_data_url: None,
-            snapshot: None,
         }
     }
 
@@ -68,11 +54,7 @@ impl Component for State {
                 let cb = self.link.send_back(Msg::CamPos);
                 let cb_swap_to_video = self.link.send_back(Msg::SwapToVideo);
 
-                draw(canvas.clone(), cb.clone(), cb_swap_to_video.clone());
-
-                window().add_event_listener(enclose!( (canvas) move |_: ResizeEvent| {
-                    draw(canvas.clone(), cb.clone(), cb_swap_to_video.clone());
-                }));
+                draw(canvas, cb, cb_swap_to_video);
 
                 true
             }
@@ -110,21 +92,34 @@ impl Component for State {
             Msg::PictureTaken(data_url) => {
                 self.snapshot_data_url = Some(data_url.clone());
                 let image = ImageElement::new();
-                image.set_attribute("src", &data_url.clone()).unwrap();
-                self.snapshot = Some(image.clone());
+                image.set_attribute("src", &data_url).unwrap();
+                
                 let canvas: CanvasElement = get_canvas();
                 let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
-                resize_canvas(canvas.clone());
+                resize_canvas(&canvas);
+
+                let cb_cam_pos = {
+                    let cb = self.link.send_back(Msg::CamPos);
+                    move |p: Vec<u32>| cb.emit(p)
+                };
+                let cb_swap_to_video = {
+                    let cb = self.link.send_back(Msg::SwapToVideo);
+                    move |b: bool| cb.emit(b)
+                };
 
                 js! {
-                    var img = @{image.clone()};
-                    var cv = @{canvas.clone()};
-                    var ctx = @{context.clone()};
+                    var img = @{image};
+                    var cv = @{canvas};
+                    var ctx = @{context};
                     img.onload = function() {
                         var w = cv.width / img.width;
                         var h = cv.height / img.height;
                         ctx.scale(w, h);
-                        @{context}.drawImage(img, 0, 0);
+                        ctx.drawImage(img, 0, 0);
+                        snapshotBoundingBoxes(img, 1.0, 1.0);
+                        var cb = @{cb_cam_pos};
+                        var cameraClickCb = @{cb_swap_to_video};
+                        drawCamera(cb, cameraClickCb);
                     }
                 }
 
@@ -134,13 +129,13 @@ impl Component for State {
     }
 }
 
-fn resize_canvas(canvas: CanvasElement) {
+fn resize_canvas(canvas: &CanvasElement) {
     canvas.set_width(canvas.offset_width() as u32);
     canvas.set_height(canvas.offset_height() as u32);
 }
 
 fn draw(canvas: CanvasElement, camera_position: Callback<Vec<u32>>, swap_to_video: Callback<bool>) {
-    resize_canvas(canvas);
+    resize_canvas(&canvas);
 
     js_draw(camera_position, swap_to_video);
 }
@@ -168,7 +163,7 @@ impl Renderable<State> for State {
             }
         } else {
             html! {
-                <canvas id="canvas",></canvas>
+                <canvas id="canvas", onclick=|_| Msg::SwapToVideo(true),></canvas>
             }
         }
     }
