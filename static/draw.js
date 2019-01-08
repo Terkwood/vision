@@ -55,28 +55,6 @@ function registerCameraEvents(canvas, img, dx, dy, cameraClickCb) {
     };
 }
 
-function draw(cb, cameraClickCb) {
-    _.debounce(() => {
-        var canvas = document.getElementById("canvas");
-            
-        var ctx = canvas.getContext("2d");
-        var img = new Image();
-        img.src = "image.png";
-
-        img.onload = function() {
-            var dx = (canvas.offsetWidth / 2) - (img.width / 2);
-            var dy = (canvas.offsetHeight / 2) - (img.height / 2);
-
-            ctx.drawImage(img, dx, dy, img.width, img.height);
-            //drawCamera(canvas, cb, cameraClickCb);
-
-            if (cb) {
-                drawBoundingBoxes(canvas, img, cameraClickCb);
-            }
-        };
-    }, 1000)()
-}
-
 const FONT = "30px Arial";
 const GREEN = "rgb(0,255,0)";
 const HUD_X = 50;
