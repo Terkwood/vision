@@ -77,6 +77,10 @@ function draw(cb, cameraClickCb) {
     }, 1000)()
 }
 
+const FONT = "30px Arial";
+const GREEN = "rgb(0,255,0)";
+const HUD_X = 50;
+const HUD_Y = 50;
 
 function snapshotBoundingBoxes(img) {
     cocoSsd.load().then(model => {
@@ -84,8 +88,16 @@ function snapshotBoundingBoxes(img) {
             var canvas = document.querySelector("#canvas");
             var ctx = canvas.getContext("2d");
             ctx.lineWidth = 3;
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.drawImage(img, 0, 0, img.width, img.height);
 
             const COLORS = ["rgb(255,0,0)", "rgb(255,255,0)", "rgb(0,255,0)", "rgb(0,255,255)"];
+            if (predictions.length == 0) {
+                ctx.font = FONT;
+                ctx.fillStyle = GREEN;
+                ctx.fillText("I DON'T SEE ANYTHING", HUD_X, HUD_Y);
+            }
+            
             predictions.forEach(function(p, i) {
                 ctx.beginPath();
                 var color = COLORS[i % COLORS.length];
@@ -94,7 +106,7 @@ function snapshotBoundingBoxes(img) {
                 ctx.rect(p.bbox[0], p.bbox[1], p.bbox[2], p.bbox[3]);
                 ctx.stroke();
 
-                ctx.font = "30px Arial";
+                ctx.font = FONT;
                 ctx.fillStyle = color;
                 const TEXT_OFFSET = -10;
                 ctx.fillText(p.class, p.bbox[0], p.bbox[1] + TEXT_OFFSET);

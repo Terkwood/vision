@@ -116,6 +116,10 @@ impl Component for State {
                         var h = cv.height / img.height;
                         ctx.scale(w, h);
                         ctx.drawImage(img, 0, 0);
+                        ctx.beginPath();
+                        ctx.fillStyle = GREEN;
+                        ctx.font = FONT;
+                        ctx.fillText("PROCESSING", HUD_X, HUD_Y);
                         snapshotBoundingBoxes(img, 1.0, 1.0);
                         //var cb = @{cb_cam_pos};
                         //var cameraClickCb = @{cb_swap_to_video};
