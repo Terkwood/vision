@@ -1,7 +1,7 @@
 extern crate stdweb;
 extern crate yew;
 
-use vision::{Msg, State};
+use vision::State;
 use yew::prelude::*;
 
 fn main() {
