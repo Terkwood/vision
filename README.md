@@ -6,6 +6,10 @@ Use your device's camera to run object detection on the world around you.
 
 ![Bounding box example](example.png)
 
+## Online demo
+
+[You can see a demo here](https://vision.prawn.farm)
+
 ## Developer Usage
 
 ```sh
