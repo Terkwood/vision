@@ -136,7 +136,7 @@ function exp(cameraClickCb) {
     cameraClickCb.drop();
 }
 function swapToVideo() {
-    var constraints = { audio: false, video: true }; 
+    var constraints = { audio: false, video: { facingMode: { ideal: "environment"} } }; 
 
     navigator.mediaDevices.getUserMedia(constraints)
         .then(function(stream){
