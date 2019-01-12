@@ -92,7 +92,7 @@ var CanvasDrawr = function(options) {
         postDraw: function(event) {
             $.each(event.changedTouches, function(i, touch) {
                 ctxt.rect(minPoints[i].x, minPoints[i].y, maxPoints[i].x - minPoints[i].x, maxPoints[i].y - minPoints[i].y);
-                ctxt.fillStyle = 'yellow';
+                ctxt.fillStyle = '#66b3ff';
                 ctxt.fill();
                 ctxt.lineWidth = 7;
                 ctxt.strokeStyle = 'black';
