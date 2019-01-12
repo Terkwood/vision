@@ -60,17 +60,19 @@ var CanvasDrawr = function(options) {
                 lines[id].x = ret.x;
                 lines[id].y = ret.y;
 
-                if (ret.x < minPoints[id].x) {
-                    minPoints[id].x = ret.x;
+                var x = this.pageX - offset.left,
+                    y = this.pageY - offset.top;
+                if (x < minPoints[id].x) {
+                    minPoints[id].x = x;
                 }
-                if (ret.x > maxPoints[id].x) {
-                    maxPoints[id].x = ret.x;
+                if (x > maxPoints[id].x) {
+                    maxPoints[id].x = x;
                 }
-                if (ret.y < minPoints[id].y) {
-                    minPoints[id].y = ret.y;
+                if (y < minPoints[id].y) {
+                    minPoints[id].y = y;
                 }
-                if (ret.y > maxPoints[id].y) {
-                    maxPoints[id].y = ret.y;
+                if (y > maxPoints[id].y) {
+                    maxPoints[id].y = y;
                 }
             });
             event.preventDefault();
@@ -89,10 +91,12 @@ var CanvasDrawr = function(options) {
         },
         postDraw: function(event) {
             $.each(event.changedTouches, function(i, touch) {
-                var x = this.pageX - offset.left;
-                var y = this.pageY - offset.top;
-            
-                    
+                ctxt.rect(minPoints[i].x, minPoints[i].y, maxPoints[i].x - minPoints[i].x, maxPoints[i].y - minPoints[i].y);
+                ctxt.fillStyle = 'yellow';
+                ctxt.fill();
+                ctxt.lineWidth = 7;
+                ctxt.strokeStyle = 'black';
+                ctxt.stroke();    
             });
             event.preventDefault();
         },
