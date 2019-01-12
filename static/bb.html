@@ -22,20 +22,28 @@ var CanvasDrawr = function(options) {
     ctxt.pX = undefined;
     ctxt.pY = undefined;
     var lines = [, , ];
+    var minPoints = [, , ];
+    var maxPoints = [, , ];
     var offset = $(canvas).offset();
     var self = {
         init: function() {
             canvas.addEventListener('touchstart', self.preDraw, false);
             canvas.addEventListener('touchmove', self.draw, false);
+            canvas.addEventListener('touchend', self.postDraw, false);
         },
         preDraw: function(event) {
             $.each(event.touches, function(i, touch) {
                 var id = touch.identifier,
                     colors = ["red", "green", "yellow", "blue", "magenta", "orangered"],
                     mycolor = colors[Math.floor(Math.random() * colors.length)];
+                
+                var x = this.pageX - offset.left,
+                    y = this.pageY - offset.top;
+                minPoints[id] = { x: x, y: y };
+                maxPoints[id] = { x: x, y: y };
                 lines[id] = {
-                    x: this.pageX - offset.left,
-                    y: this.pageY - offset.top,
+                    x: x,
+                    y: y,
                     color: mycolor
                 };
             });
@@ -51,6 +59,19 @@ var CanvasDrawr = function(options) {
                 var ret = self.move(id, moveX, moveY);
                 lines[id].x = ret.x;
                 lines[id].y = ret.y;
+
+                if (ret.x < minPoints[id].x) {
+                    minPoints[id].x = ret.x;
+                }
+                if (ret.x > maxPoints[id].x) {
+                    maxPoints[id].x = ret.x;
+                }
+                if (ret.y < minPoints[id].y) {
+                    minPoints[id].y = ret.y;
+                }
+                if (ret.y > maxPoints[id].y) {
+                    maxPoints[id].y = ret.y;
+                }
             });
             event.preventDefault();
         },
@@ -65,7 +86,16 @@ var CanvasDrawr = function(options) {
                 x: lines[i].x + changeX,
                 y: lines[i].y + changeY
             };
-        }
+        },
+        postDraw: function(event) {
+            $.each(event.changedTouches, function(i, touch) {
+                var x = this.pageX - offset.left;
+                var y = this.pageY - offset.top;
+            
+                    
+            });
+            event.preventDefault();
+        },
     };
     return self.init();
 };
