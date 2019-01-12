@@ -8,7 +8,7 @@
     id="example"
     style="border:10px solid plum;"> 
 Canvas not available</canvas>
-<script class="jsbin" src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
 var CanvasDrawr = function(options) {
     var canvas = document.getElementById(options.id),
@@ -110,8 +110,6 @@ function setCanvasDims() {
 
     var height = Math.max( body.scrollHeight, body.offsetHeight, 
                        html.clientHeight, html.scrollHeight, html.offsetHeight );
-    console.log(height);
-
     var canvas = document.querySelector("#example");
     canvas.height = height * 0.98;
     canvas.width = body.offsetWidth * 0.98;
