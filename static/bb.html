@@ -25,55 +25,71 @@ var CanvasDrawr = function(options) {
     var minPoints = [, , ];
     var maxPoints = [, , ];
     var offset = $(canvas).offset();
+    var colors = ["red", "green", "yellow", "blue", "magenta", "orangered"]; 
+    var mouseId = 0;
+
+
     var self = {
         init: function() {
-            canvas.addEventListener('touchstart', self.preDraw, false);
-            canvas.addEventListener('touchmove', self.draw, false);
-            canvas.addEventListener('touchend', self.postDraw, false);
+            canvas.addEventListener('touchstart', self.preDrawTouch, false);
+            canvas.addEventListener('touchmove', self.drawTouch, false);
+            canvas.addEventListener('touchend', self.postDrawTouch, false);
+            canvas.addEventListener('mousedown', self.preDrawMouse, false);
+            canvas.addEventListener('mousemove', self.drawMouse, false);
+            canvas.addEventListener('mouseup', self.postDrawMouse, false);
         },
-        preDraw: function(event) {
+        color: function() {
+            return colors[Math.floor(Math.random() * colors.length)];
+        },
+        preDrawTouch: function(event) {
             $.each(event.touches, function(i, touch) {
-                var id = touch.identifier,
-                    colors = ["red", "green", "yellow", "blue", "magenta", "orangered"],
-                    mycolor = colors[Math.floor(Math.random() * colors.length)];
+                var id = touch.identifier;
                 
                 var x = this.pageX - offset.left,
                     y = this.pageY - offset.top;
+                
                 minPoints[id] = { x: x, y: y };
                 maxPoints[id] = { x: x, y: y };
                 lines[id] = {
                     x: x,
                     y: y,
-                    color: mycolor
+                    color: self.color()
                 };
             });
             event.preventDefault();
         },
-        draw: function(event) {
-            var e = event,
-                hmm = {};
+        updateMinMax: function(id, x, y) {
+            if (x < minPoints[id].x) {
+                minPoints[id].x = x;
+            }
+            if (x > maxPoints[id].x) {
+                maxPoints[id].x = x;
+            }
+            if (y < minPoints[id].y) {
+                minPoints[id].y = y;
+            }
+            if (y > maxPoints[id].y) {
+                maxPoints[id].y = y;
+            };
+        },
+        drawTouch: function(event) {
+            var e = event;
             $.each(event.touches, function(i, touch) {
-                var id = touch.identifier,
-                    moveX = this.pageX - offset.left - lines[id].x,
+                var id = touch.identifier;
+                var moveX = this.pageX - offset.left - lines[id].x,
                     moveY = this.pageY - offset.top - lines[id].y;
+                
+
                 var ret = self.move(id, moveX, moveY);
                 lines[id].x = ret.x;
                 lines[id].y = ret.y;
 
+
                 var x = this.pageX - offset.left,
                     y = this.pageY - offset.top;
-                if (x < minPoints[id].x) {
-                    minPoints[id].x = x;
-                }
-                if (x > maxPoints[id].x) {
-                    maxPoints[id].x = x;
-                }
-                if (y < minPoints[id].y) {
-                    minPoints[id].y = y;
-                }
-                if (y > maxPoints[id].y) {
-                    maxPoints[id].y = y;
-                }
+
+                self.updateMinMax(id, x, y);
+
             });
             event.preventDefault();
         },
@@ -89,8 +105,8 @@ var CanvasDrawr = function(options) {
                 y: lines[i].y + changeY
             };
         },
-        postDraw: function(event) {
-            $.each(event.changedTouches, function(i, touch) {
+        postDrawTouch: function(event) {
+            $.each(event.changedTouches, function(i, _touch) {
                 ctxt.rect(minPoints[i].x, minPoints[i].y, maxPoints[i].x - minPoints[i].x, maxPoints[i].y - minPoints[i].y);
                 ctxt.fillStyle = '#66b3ff';
                 ctxt.fill();
@@ -100,6 +116,59 @@ var CanvasDrawr = function(options) {
             });
             event.preventDefault();
         },
+        mousePos: function(e) {
+            var mouseX, mouseY;
+            if (!(navigator.appName == "Microsoft Internet Explorer") ? true : false) {
+                mouseX = e.pageX; 
+                mouseY = e.pageY;
+            }
+            else {
+                mouseX = event.clientX + document.body.scrollLeft;
+                mouseY = event.clientY + document.body.scrollTop;
+            }
+
+            return { x: mouseX, y: mouseY };
+        },
+        preDrawMouse: function(event) {
+            var pos = self.mousePos(event);
+            var x = pos.x,
+                y = pos.y;
+            
+            minPoints[mouseId] = { x: x, y: y };
+            maxPoints[mouseId] = { x: x, y: y };
+            lines[mouseId] = {
+                x: x,
+                y: y,
+                color: self.color()
+            };
+            event.preventDefault();
+        },
+        drawMouse: function(event) { 
+            var id = mouseId;
+            if (!lines[id]) {
+                self.preDrawMouse(event);
+            }
+            var pos = self.mousePos(event);
+            var ret = self.move(id, pos.x - lines[id].x, pos.y - lines[id].y);
+            lines[id].x = ret.x;
+            lines[id].y = ret.y;
+            
+            var pos = self.mousePos(event);
+
+            self.updateMinMax(id, pos.x, pos.y);
+
+            event.preventDefault();
+        },
+        postDrawMouse: function(event) {
+            var i = mouseId;
+            ctxt.rect(minPoints[i].x, minPoints[i].y, maxPoints[i].x - minPoints[i].x, maxPoints[i].y - minPoints[i].y);
+            ctxt.fillStyle = '#ffb366';
+            ctxt.fill();
+            ctxt.lineWidth = 7;
+            ctxt.strokeStyle = 'black';
+            ctxt.stroke();    
+            event.preventDefault();
+        }
     };
     return self.init();
 };
