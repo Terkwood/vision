@@ -15,6 +15,9 @@
         </style>
         <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js"></script>
         <script src="draw.js"></script>
+        <!-- tensorflow.js version 0.14.2 caused some int/float
+             type conversion errors when executing the model,
+             so we've forced a lower version here -->
         <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.14.1"> </script>
         <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"> </script>
     </head>
