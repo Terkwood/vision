@@ -19,7 +19,7 @@ var CanvasDrawr = function(options) {
     var colors = ["red", "green", "yellow", "blue", "magenta", "orangered"]; 
     var mouseId = 0;
 
-    var dormant = true;
+    var dormant = false;
 
     var ifAwake = function(f) {
         return function(e) {
