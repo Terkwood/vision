@@ -33,7 +33,7 @@ impl Component for State {
             link,
             video: false,
             snapshot_data_url: None,
-            draw_bounding_boxes: true,
+            draw_bounding_boxes: true, // TODO
         }
     }
 
