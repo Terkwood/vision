@@ -14,12 +14,14 @@ pub enum Msg {
     SwapToVideo(bool),
     TakePicture,
     PictureTaken(String), // dataURL for image
+    CanvasClicked,
 }
 
 pub struct State {
     link: ComponentLink<State>,
     video: bool,
     snapshot_data_url: Option<String>,
+    draw_bounding_boxes: bool,
 }
 
 impl Component for State {
@@ -31,11 +33,20 @@ impl Component for State {
             link,
             video: false,
             snapshot_data_url: None,
+            draw_bounding_boxes: true,
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
+            Msg::CanvasClicked => {
+                if self.draw_bounding_boxes {
+                    unimplemented!()
+                } else {
+                    self.link.send_self(Msg::SwapToVideo(true))
+                }
+                false
+            }
             Msg::SwapToVideo(b) => {
                 self.video = b;
                 if b {
@@ -104,7 +115,10 @@ impl Renderable<State> for State {
             }
         } else {
             html! {
-                <canvas id="canvas", onclick=|_| Msg::SwapToVideo(true),></canvas>
+                <canvas
+                    id="canvas",
+                    onclick=|_| Msg::CanvasClicked,>
+                </canvas>
             }
         }
     }
