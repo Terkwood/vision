@@ -35,7 +35,7 @@ impl Component for State {
                 if (canvas) {
                     clearInterval(readyCheck);
 
-                    var bounding_box_painter = new CanvasDrawr({
+                    boundingBoxPainter = new CanvasDrawr({
                         id: "canvas",
                         size: 15
                     });
@@ -57,7 +57,7 @@ impl Component for State {
                 }
             }, 50);
         }
-
+        
         State {
             link,
             video: false,
@@ -70,7 +70,7 @@ impl Component for State {
         match msg {
             Msg::CanvasClicked => {
                 if self.draw_bounding_boxes {
-                    js!{console.log("Idunno");}
+                    wake_bounding_box_painter()
                 } else {
                     self.link.send_self(Msg::SwapToVideo(true))
                 }
@@ -125,6 +125,18 @@ impl Component for State {
                 false
             }
         }
+    }
+}
+
+fn sleep_bounding_box_painter() {
+    js! {
+        boundingBoxPainter.goToSleep();
+    }
+}
+
+fn wake_bounding_box_painter() {
+    js! {
+        boundingBoxPainter.wakeUp();
     }
 }
 

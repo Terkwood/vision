@@ -3,6 +3,9 @@ const GREEN = "rgb(0,255,0)";
 const HUD_X = 50;
 const HUD_Y = 50;
 
+// This global is used by rust
+var boundingBoxPainter;
+
 function _drawCamera(camPositionCb, cameraClickCb) {
     var canvas = document.querySelector("#canvas");
     var ctx = canvas.getContext("2d");

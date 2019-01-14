@@ -19,13 +19,15 @@ var CanvasDrawr = function(options) {
     var colors = ["red", "green", "yellow", "blue", "magenta", "orangered"]; 
     var mouseId = 0;
 
-    var dormant = false;
+    var dormant = true;
 
     var ifAwake = function(f) {
         return function(e) {
             if (!dormant) {
+                console.log("I'M AWAKE! ☕️")
                 return f(e);
             } else {
+                console.log("I'm sleepy 😴");
                 return (function(_event) {})(e);
             } 
         }
@@ -34,11 +36,12 @@ var CanvasDrawr = function(options) {
     var self = {
         // This method can be used by rust
         goToSleep: function() {
-            self.dormant = true;
+            dormant = true;
         },
         // This method can be used by rust
         wakeUp: function() {
-            self.dormant = false;
+            console.log("HELLO?");
+            dormant = false;
         },
         init: function() {
             canvas.addEventListener('touchstart', ifAwake(self.preDrawTouch), false);
@@ -47,6 +50,7 @@ var CanvasDrawr = function(options) {
             canvas.addEventListener('mousedown', ifAwake(self.preDrawMouse), false);
             canvas.addEventListener('mousemove', ifAwake(self.drawMouse), false);
             canvas.addEventListener('mouseup', ifAwake(self.postDrawMouse), false);
+            return self;
         },
         color: function() {
             return colors[Math.floor(Math.random() * colors.length)];
