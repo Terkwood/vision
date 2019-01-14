@@ -7,6 +7,11 @@ var readyCheck = setInterval(function() {
     var canvas = document.querySelector("#canvas");
     if (canvas) {
         clearInterval(readyCheck);
+
+        var _bounding_box_painter = new CanvasDrawr({
+            id: "canvas",
+            size: 15
+        });
         
         var myCanvas = alterHiDPICanvas(canvas, document.body.clientWidth, document.body.clientHeight);
         var ctx = myCanvas.getContext("2d");

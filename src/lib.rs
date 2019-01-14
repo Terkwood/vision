@@ -41,7 +41,7 @@ impl Component for State {
         match msg {
             Msg::CanvasClicked => {
                 if self.draw_bounding_boxes {
-                    unimplemented!()
+                    js!{console.log("Idunno");}
                 } else {
                     self.link.send_self(Msg::SwapToVideo(true))
                 }
