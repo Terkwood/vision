@@ -35,10 +35,10 @@ impl Component for State {
                 if (canvas) {
                     clearInterval(readyCheck);
 
-                    /*var _bounding_box_painter = new CanvasDrawr({
+                    var bounding_box_painter = new CanvasDrawr({
                         id: "canvas",
                         size: 15
-                    });*/
+                    });
                     
                     var myCanvas = alterHiDPICanvas(canvas, document.body.clientWidth, document.body.clientHeight);
                     var ctx = myCanvas.getContext("2d");
@@ -62,7 +62,7 @@ impl Component for State {
             link,
             video: false,
             snapshot_data_url: None,
-            draw_bounding_boxes: false, // TODO
+            draw_bounding_boxes: true, // TODO
         }
     }
 

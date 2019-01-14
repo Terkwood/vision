@@ -1,5 +1,5 @@
 // LET THE ATTRIBUTION BE KNOWN!
-// The bulk of this was inspired by Paul Irish's
+// The bulk of CanvasDrawr was inspired by Paul Irish's
 // multi-touch demo: https://www.paulirish.com/demo/multi
 var CanvasDrawr = function(options) {
     var canvas = document.getElementById(options.id),
