@@ -39,7 +39,7 @@ impl Component for State {
                         id: "canvas",
                         size: 15
                     });
-                    
+
                     var myCanvas = alterHiDPICanvas(canvas, document.body.clientWidth, document.body.clientHeight);
                     var ctx = myCanvas.getContext("2d");
                     ctx.beginPath();
@@ -57,7 +57,7 @@ impl Component for State {
                 }
             }, 50);
         }
-        
+
         State {
             link,
             video: false,
