@@ -1,4 +1,4 @@
-#![recursion_limit = "128"]
+#![recursion_limit = "256"]
 #[macro_use]
 extern crate stdweb;
 #[macro_use]
@@ -29,11 +29,40 @@ impl Component for State {
     type Properties = ();
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
+        js! {
+            var readyCheck = setInterval(function() {
+                var canvas = document.querySelector("#canvas");
+                if (canvas) {
+                    clearInterval(readyCheck);
+
+                    /*var _bounding_box_painter = new CanvasDrawr({
+                        id: "canvas",
+                        size: 15
+                    });*/
+                    
+                    var myCanvas = alterHiDPICanvas(canvas, document.body.clientWidth, document.body.clientHeight);
+                    var ctx = myCanvas.getContext("2d");
+                    ctx.beginPath();
+                    ctx.rect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = "black";
+                    ctx.fill();
+
+                    ctx.beginPath();
+                    ctx.font = "24px Arial";
+                    ctx.fillStyle = GREEN;
+                    ctx.fillText("TAP to start.", HUD_X / 3, HUD_Y);
+                    ctx.fillText("Then TAP to take a photo.", HUD_X / 3, HUD_Y * 2);
+                    ctx.fillText("Photo processing may take", HUD_X / 3, HUD_Y * 4);
+                    ctx.fillText("       up to 10 seconds!", HUD_X / 3, HUD_Y * 5);
+                }
+            }, 50);
+        }
+
         State {
             link,
             video: false,
             snapshot_data_url: None,
-            draw_bounding_boxes: true, // TODO
+            draw_bounding_boxes: false, // TODO
         }
     }
 
