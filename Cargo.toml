@@ -7,3 +7,7 @@ edition = "2018"
 [dependencies]
 stdweb = "0.4"
 yew = { git = "https://github.com/DenisKolodin/yew" }
+
+[profile.release]
+lto = true
+opt-level = 's'
