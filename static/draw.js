@@ -25,7 +25,6 @@ var readyCheck = setInterval(function() {
     }
  }, 50);
 
-// imgSrc default: "camera-outline.png"
 function drawButton(posCb, clickCb, imgSrc) {
     var canvas = document.querySelector("#canvas");
     var ctx = canvas.getContext("2d");
@@ -34,8 +33,10 @@ function drawButton(posCb, clickCb, imgSrc) {
         var dx = (canvas.offsetWidth / 6) - (img.width / 2);
         var dy = 7 * (canvas.offsetHeight / 8) - (img.height / 2);
 
+        console.log("YO " + dx + " " + dy);
         ctx.drawImage(img, dx, dy);
-        registerCameraEvents(canvas, img, dx, dy, clickCb);
+        registerButtonEvents(canvas, img, dx, dy, clickCb);
+        
         
         if (posCb) {
             posCb([Math.round(dx), Math.round(dy), img.width, img.height]);
@@ -47,7 +48,7 @@ function drawButton(posCb, clickCb, imgSrc) {
 }
 
 function registerButtonEvents(canvas, img, dx, dy, clickCb) {
-    var cameraPath = new Path2D();
+    var buttonPath = new Path2D();
     buttonPath.rect(dx,dy,img.width,img.height);
 
     canvas.onclick = function (e) {
@@ -56,7 +57,8 @@ function registerButtonEvents(canvas, img, dx, dy, clickCb) {
         var coordY  = e.offsetY;
         
         if (context.isPointInPath(buttonPath, coordX, coordY)) {
-            exp(clickCb);
+            clickCb(true);
+            clickCb.drop();
             return;
         }
     }
@@ -67,7 +69,7 @@ function registerButtonEvents(canvas, img, dx, dy, clickCb) {
         var coordX  = e.offsetX;
         var coordY  = e.offsetY;
         
-        if (context.isPointInPath(cameraPath, coordX, coordY)) {
+        if (context.isPointInPath(buttonPath, coordX, coordY)) {
             e.target.style.cursor = 'pointer';
             return;
         }
@@ -109,7 +111,7 @@ function snapshotBoundingBoxes(img) {
     });
 }
 
-function drawBoundingBoxes(canvas, img, cameraClickCb) {
+function drawBoundingBoxes(canvas, img, dlBtnClickCb) {
     cocoSsd.load().then(model => {
         model.detect(img).then(predictions => {
             var ctx = canvas.getContext("2d");
@@ -133,10 +135,7 @@ function drawBoundingBoxes(canvas, img, cameraClickCb) {
     });
 }
 
-function exp(cameraClickCb) {
-    cameraClickCb(true);
-    cameraClickCb.drop();
-}
+
 function swapToVideo() {
     var constraints = { audio: false, video: { facingMode: { ideal: "environment"} } }; 
 

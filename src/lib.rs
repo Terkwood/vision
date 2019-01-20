@@ -113,8 +113,8 @@ impl Component for State {
                         ctx.fillText("PROCESSING", HUD_X, HUD_Y);
                         snapshotBoundingBoxes(img, 1.0, 1.0);
                         var cbDlBtnPos = @{cb_dl_btn_pos};
-                        var cbDlnBtnClick = @{cb_dl_btn_click}
-                        drawButton(cbDlBtnPos, cbDlnBtnClick);
+                        var cbDlnBtnClick = @{cb_dl_btn_click};
+                        drawButton(cbDlBtnPos, cbDlnBtnClick, "download-outline.png");
                     }
                 }
 
