@@ -26,7 +26,7 @@ var readyCheck = setInterval(function() {
  }, 50);
 
 // imgSrc default: "camera-outline.png"
-function _drawButton(posCb, clickCb, imgSrc) {
+function drawButton(posCb, clickCb, imgSrc) {
     var canvas = document.querySelector("#canvas");
     var ctx = canvas.getContext("2d");
     var img = new Image();
@@ -35,28 +35,28 @@ function _drawButton(posCb, clickCb, imgSrc) {
         var dy = 7 * (canvas.offsetHeight / 8) - (img.height / 2);
 
         ctx.drawImage(img, dx, dy);
-        registerCameraEvents(canvas, img, dx, dy, cameraClickCb);
+        registerCameraEvents(canvas, img, dx, dy, clickCb);
         
-        if (camPositionCb) {
-            camPositionCb([Math.round(dx), Math.round(dy), img.width, img.height]);
-            camPositionCb.drop();
+        if (posCb) {
+            posCb([Math.round(dx), Math.round(dy), img.width, img.height]);
+            posCb.drop();
         }
     };
 
     img.src = imgSrc;
 }
 
-function registerCameraEvents(canvas, img, dx, dy, cameraClickCb) {
+function registerButtonEvents(canvas, img, dx, dy, clickCb) {
     var cameraPath = new Path2D();
-    cameraPath.rect(dx,dy,img.width,img.height);
+    buttonPath.rect(dx,dy,img.width,img.height);
 
     canvas.onclick = function (e) {
         var context = e.target.getContext('2d');
         var coordX  = e.offsetX;
         var coordY  = e.offsetY;
         
-        if (context.isPointInPath(cameraPath, coordX, coordY)) {
-            exp(cameraClickCb);
+        if (context.isPointInPath(buttonPath, coordX, coordY)) {
+            exp(clickCb);
             return;
         }
     }

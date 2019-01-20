@@ -11,10 +11,11 @@ use stdweb::web::{document, CanvasRenderingContext2d};
 use yew::prelude::*;
 
 pub enum Msg {
-    SwapToVideo(bool),
+    SwapToVideo(bool), // dummy bool ?
     TakePicture,
     PictureTaken(String), // dataURL for image
     DownloadButtonPos(Vec<u32>),
+    DownloadButtonClick(bool), // dummy bool ?
 }
 
 pub struct State {
@@ -47,6 +48,7 @@ impl Component for State {
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
+            Msg::DownloadButtonClick(_b) => unimplemented!(),
             Msg::DownloadButtonPos(p) => {
                 let p = ButtonPosition {
                     x: p[0],
@@ -87,6 +89,15 @@ impl Component for State {
                 let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
                 resize_canvas(&canvas);
 
+                let cb_dl_btn_pos = {
+                    let cb = self.link.send_back(Msg::DownloadButtonPos);
+                    move |p: Vec<u32>| cb.emit(p)
+                };
+                let cb_dl_btn_click = {
+                    let cb = self.link.send_back(Msg::SwapToVideo);
+                    move |b: bool| cb.emit(b)
+                };
+
                 js! {
                     var img = @{image};
                     var cv = @{canvas};
@@ -101,6 +112,9 @@ impl Component for State {
                         ctx.font = FONT;
                         ctx.fillText("PROCESSING", HUD_X, HUD_Y);
                         snapshotBoundingBoxes(img, 1.0, 1.0);
+                        var cbDlBtnPos = @{cb_dl_btn_pos};
+                        var cbDlnBtnClick = @{cb_dl_btn_click}
+                        drawButton(cbDlBtnPos, cbDlnBtnClick);
                     }
                 }
 
