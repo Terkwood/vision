@@ -78,7 +78,7 @@ function registerButtonEvents(canvas, img, dx, dy, clickCb) {
     };
 }
 
-function snapshotBoundingBoxes(img) {
+function snapshotBoundingBoxes(img, drawDlBtn) {
     cocoSsd.load().then(model => {
         model.detect(img).then(predictions => {
             var canvas = document.querySelector("#canvas");
@@ -107,34 +107,11 @@ function snapshotBoundingBoxes(img) {
                 const TEXT_OFFSET = -10;
                 ctx.fillText(p.class, p.bbox[0], p.bbox[1] + TEXT_OFFSET);
             });
+
+            drawDlBtn();
         });
     });
 }
-
-function drawBoundingBoxes(canvas, img, dlBtnClickCb) {
-    cocoSsd.load().then(model => {
-        model.detect(img).then(predictions => {
-            var ctx = canvas.getContext("2d");
-            ctx.lineWidth = 3;
-
-            const COLORS = ["rgb(255,0,0)", "rgb(255,255,0)", "rgb(0,255,0)", "rgb(0,255,255)"];
-            predictions.forEach(function(p, i) {
-                ctx.beginPath();
-                var color = COLORS[i % COLORS.length];
-
-                ctx.strokeStyle = color;
-                ctx.rect(p.bbox[0], p.bbox[1], p.bbox[2], p.bbox[3]);
-                ctx.stroke();
-
-                ctx.font = FONT;
-                ctx.fillStyle = color;
-                const TEXT_OFFSET = -10;
-                ctx.fillText(p.class, p.bbox[0], p.bbox[1] + TEXT_OFFSET);
-            });
-        });
-    });
-}
-
 
 function swapToVideo() {
     var constraints = { audio: false, video: { facingMode: { ideal: "environment"} } }; 
@@ -199,4 +176,11 @@ alterHiDPICanvas = function(can, w, h, ratio) {
     can.style.height = h + "px";
     can.getContext("2d").setTransform(ratio, 0, 0, ratio, 0, 0);
     return can;
+}
+
+function logCursorPosition(canvas, event) {
+    var rect = canvas.getBoundingClientRect();
+    var x = event.clientX - rect.left;
+    var y = event.clientY - rect.top;
+    console.log("x: " + x + " y: " + y);
 }

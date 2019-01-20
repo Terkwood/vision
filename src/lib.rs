@@ -1,4 +1,4 @@
-#![recursion_limit = "128"]
+#![recursion_limit = "256"]
 #[macro_use]
 extern crate stdweb;
 #[macro_use]
@@ -11,7 +11,7 @@ use stdweb::web::{document, CanvasRenderingContext2d};
 use yew::prelude::*;
 
 pub enum Msg {
-    SwapToVideo(bool), // dummy bool ?
+    SwapToVideo(ClickEvent),
     TakePicture,
     PictureTaken(String), // dataURL for image
     DownloadButtonPos(Vec<u32>),
@@ -60,13 +60,18 @@ impl Component for State {
                 self.download_button_position = Some(p);
                 false
             }
-            Msg::SwapToVideo(b) => {
-                self.video = b;
-                if b {
-                    js! {
-                        swapToVideo();
-                    }
+            Msg::SwapToVideo(e) => {
+                js! {
+                    var canvas = document.querySelector("#canvas");
+                    logCursorPosition(canvas, @{e});
                 }
+
+                self.video = true;
+                
+                js! {
+                    swapToVideo();
+                }
+                
                 true
             }
             Msg::TakePicture => {
@@ -95,7 +100,7 @@ impl Component for State {
                 };
                 let cb_dl_btn_click = {
                     let cb = self.link.send_back(Msg::SwapToVideo);
-                    move |b: bool| cb.emit(b)
+                    move |e| cb.emit(e)
                 };
 
                 js! {
@@ -111,10 +116,14 @@ impl Component for State {
                         ctx.fillStyle = GREEN;
                         ctx.font = FONT;
                         ctx.fillText("PROCESSING", HUD_X, HUD_Y);
-                        snapshotBoundingBoxes(img, 1.0, 1.0);
-                        var cbDlBtnPos = @{cb_dl_btn_pos};
-                        var cbDlnBtnClick = @{cb_dl_btn_click};
-                        drawButton(cbDlBtnPos, cbDlnBtnClick, "download-outline.png");
+                    
+                        var drawDlBtn = function() {
+                            var cbDlBtnPos = @{cb_dl_btn_pos};
+                            var cbDlnBtnClick = @{cb_dl_btn_click};
+                            drawButton(cbDlBtnPos, cbDlnBtnClick, "download-outline.png");
+                        };
+
+                        snapshotBoundingBoxes(img, drawDlBtn);
                     }
                 }
 
@@ -140,7 +149,7 @@ impl Renderable<State> for State {
             }
         } else {
             html! {
-                <canvas id="canvas", onclick=|_| Msg::SwapToVideo(true),></canvas>
+                <canvas id="canvas", onclick=|e| Msg::SwapToVideo(e),></canvas>
             }
         }
     }
