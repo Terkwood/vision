@@ -25,12 +25,13 @@ var readyCheck = setInterval(function() {
     }
  }, 50);
 
-function _drawCamera(camPositionCb, cameraClickCb) {
+// imgSrc default: "camera-outline.png"
+function _drawButton(posCb, clickCb, imgSrc) {
     var canvas = document.querySelector("#canvas");
     var ctx = canvas.getContext("2d");
     var img = new Image();
     img.onload = function() {
-        var dx = (canvas.offsetWidth / 2) - (img.width / 2);
+        var dx = (canvas.offsetWidth / 6) - (img.width / 2);
         var dy = 7 * (canvas.offsetHeight / 8) - (img.height / 2);
 
         ctx.drawImage(img, dx, dy);
@@ -42,7 +43,7 @@ function _drawCamera(camPositionCb, cameraClickCb) {
         }
     };
 
-    img.src = "camera-outline.png";
+    img.src = imgSrc;
 }
 
 function registerCameraEvents(canvas, img, dx, dy, cameraClickCb) {

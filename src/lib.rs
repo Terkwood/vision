@@ -14,12 +14,22 @@ pub enum Msg {
     SwapToVideo(bool),
     TakePicture,
     PictureTaken(String), // dataURL for image
+    DownloadButtonPos(Vec<u32>),
 }
 
 pub struct State {
     link: ComponentLink<State>,
     video: bool,
     snapshot_data_url: Option<String>,
+    download_button_position: Option<ButtonPosition>,
+}
+
+#[derive(Clone)]
+pub struct ButtonPosition {
+    x: u32,
+    y: u32,
+    width: u32,
+    height: u32,
 }
 
 impl Component for State {
@@ -31,11 +41,23 @@ impl Component for State {
             link,
             video: false,
             snapshot_data_url: None,
+            download_button_position: None,
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
+            Msg::DownloadButtonPos(p) => {
+                let p = ButtonPosition {
+                    x: p[0],
+                    y: p[1],
+                    width: p[2],
+                    height: p[3],
+                };
+
+                self.download_button_position = Some(p);
+                false
+            }
             Msg::SwapToVideo(b) => {
                 self.video = b;
                 if b {
