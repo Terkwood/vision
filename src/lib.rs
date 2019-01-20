@@ -11,7 +11,7 @@ use stdweb::web::{document, CanvasRenderingContext2d};
 use yew::prelude::*;
 
 pub enum Msg {
-    SwapToVideo(ClickEvent),
+    CanvasClicked(ClickEvent),
     TakePicture,
     PictureTaken(String), // dataURL for image
     DownloadButtonPos(Vec<u32>),
@@ -60,7 +60,7 @@ impl Component for State {
                 self.download_button_position = Some(p);
                 false
             }
-            Msg::SwapToVideo(e) => {
+            Msg::CanvasClicked(e) => {
                 js! {
                     var canvas = document.querySelector("#canvas");
                     logCursorPosition(canvas, @{e});
@@ -99,7 +99,7 @@ impl Component for State {
                     move |p: Vec<u32>| cb.emit(p)
                 };
                 let cb_dl_btn_click = {
-                    let cb = self.link.send_back(Msg::SwapToVideo);
+                    let cb = self.link.send_back(Msg::CanvasClicked);
                     move |e| cb.emit(e)
                 };
 
@@ -149,7 +149,7 @@ impl Renderable<State> for State {
             }
         } else {
             html! {
-                <canvas id="canvas", onclick=|e| Msg::SwapToVideo(e),></canvas>
+                <canvas id="canvas", onclick=|e| Msg::CanvasClicked(e),></canvas>
             }
         }
     }
