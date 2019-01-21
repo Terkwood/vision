@@ -1,8 +1,8 @@
 const FONT = "30px Arial";
 const GREEN = "rgb(0,255,0)";
-const CYAN = "rgb(0,255,255)";
 const HUD_X = 50;
 const HUD_Y = 35;
+const PRIVACY_Y = 20;
 
 var readyCheck = setInterval(function() {
     var canvas = document.querySelector("#canvas");
@@ -16,22 +16,36 @@ var readyCheck = setInterval(function() {
         ctx.fillStyle = "black";
         ctx.fill();
 
-        ctx.beginPath();
         ctx.font = "24px Arial";
         ctx.fillStyle = GREEN;
-        ctx.fillText("TAP to start.", HUD_X / 3, HUD_Y);
-        ctx.fillText("Then TAP to take a photo.", HUD_X / 3, HUD_Y * 2);
-        ctx.fillText("Photo processing may take", HUD_X / 3, HUD_Y * 4);
-        ctx.fillText("       up to 10 seconds!", HUD_X / 3, HUD_Y * 5);
-        ctx.fillStyle = BLUE;
-        ctx.fillText("PRIVACY NOTICE: This educational project", HUD_X / 3, HUD_Y * 7);
-        ctx.fillText("does not collect ANY data about you.", HUD_X / 3, HUD_Y * 8);
-        ctx.fillText("Images created with this app do not", HUD_X / 3, HUD_Y * 9);
-        ctx.fillText("leave your phone, and are not accessible", HUD_X / 3, HUD_Y * 10);
-        ctx.fillText("by third parties.", HUD_X / 3, HUD_Y * 11);
-        ctx.fillText("The code is freely available for review at", HUD_X / 3, HUD_Y * 13);
-        ctx.fillText("https://github.com/Terkwood/vision", HUD_X / 3, HUD_Y * 14);
-
+        var howToLines = [
+            "TAP to start,",
+            "    then TAP to take a photo.",
+            "",
+            "Photo processing may take",
+            "    up to 10 seconds!",
+        ];
+        var howToIdx = 1;
+        howToLines.forEach(function(l) {
+            ctx.fillText(l, HUD_X / 3, HUD_Y * howToIdx);
+            howToIdx += 1;
+        });
+        
+        ctx.font = "14px Arial"; 
+        const PRIVACY_Y_OFFSET = HUD_Y * 7;
+        var privacyLines = [
+            "PRIVACY NOTICE: This educational project",
+            "does not collect ANY data about you.",
+            "Images created with this app do not leave",
+            "your device, and are under your control.",
+            "The code may be reviewed by visiting",
+            "https://github.com/Terkwood/vision",
+        ];
+        var privacyIdx = 0;
+        privacyLines.forEach(function(l) {
+            ctx.fillText(l, HUD_X / 3, PRIVACY_Y_OFFSET + PRIVACY_Y * privacyIdx);
+            privacyIdx += 1;
+        });
     }
  }, 50);
 
