@@ -1,7 +1,7 @@
 const FONT = "30px Arial";
 const GREEN = "rgb(0,255,0)";
 const HUD_X = 50;
-const HUD_Y = 35;
+const HUD_Y = 50;
 const PRIVACY_Y = 20;
 
 var readyCheck = setInterval(function() {
