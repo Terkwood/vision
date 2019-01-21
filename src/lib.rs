@@ -66,7 +66,7 @@ impl Component for State {
                     logCursorPosition(canvas, @{e.clone()});
                 }
 
-                if download_button_clicked(e) {
+                if download_button_clicked(e, self.download_button_position.clone()) {
                     js! {
                         console.log("DL CLICKED");
                     }
@@ -171,6 +171,9 @@ fn get_canvas() -> CanvasElement {
         .unwrap()
 }
 
-fn download_button_clicked(_e: ClickEvent) -> bool {
-    false
+fn download_button_clicked(_e: ClickEvent, button_pos: Option<ButtonPosition>) -> bool {
+    match button_pos {
+        None => false,
+        _ => unimplemented!(),
+    }
 }
