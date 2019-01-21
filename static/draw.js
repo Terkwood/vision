@@ -192,7 +192,7 @@ var PIXEL_RATIO = (function () {
 })();
 
 
-alterHiDPICanvas = function(can, w, h, ratio) {
+ function alterHiDPICanvas(can, w, h, ratio) {
     if (!ratio) { ratio = PIXEL_RATIO; }
     can.width = w * ratio;
     can.height = h * ratio;

@@ -63,16 +63,23 @@ impl Component for State {
             Msg::CanvasClicked(e) => {
                 js! {
                     var canvas = document.querySelector("#canvas");
-                    logCursorPosition(canvas, @{e});
+                    logCursorPosition(canvas, @{e.clone()});
                 }
 
-                self.video = true;
-                
-                js! {
-                    swapToVideo();
+                if download_button_clicked(e) {
+                    js! {
+                        console.log("DL CLICKED");
+                    }
+                    false
+                } else {
+                    self.video = true;
+
+                    js! {
+                        swapToVideo();
+                    }
+
+                    true
                 }
-                
-                true
             }
             Msg::TakePicture => {
                 let cb: Callback<String> = self.link.send_back(Msg::PictureTaken);
@@ -116,7 +123,7 @@ impl Component for State {
                         ctx.fillStyle = GREEN;
                         ctx.font = FONT;
                         ctx.fillText("PROCESSING", HUD_X, HUD_Y);
-                    
+
                         var drawDlBtn = function() {
                             var cbDlBtnPos = @{cb_dl_btn_pos};
                             var cbDlnBtnClick = @{cb_dl_btn_click};
@@ -162,4 +169,8 @@ fn get_canvas() -> CanvasElement {
         .unwrap()
         .try_into()
         .unwrap()
+}
+
+fn download_button_clicked(_e: ClickEvent) -> bool {
+    false
 }
