@@ -1,7 +1,8 @@
 const FONT = "30px Arial";
 const GREEN = "rgb(0,255,0)";
+const CYAN = "rgb(0,255,255)";
 const HUD_X = 50;
-const HUD_Y = 50;
+const HUD_Y = 35;
 
 var readyCheck = setInterval(function() {
     var canvas = document.querySelector("#canvas");
@@ -22,6 +23,15 @@ var readyCheck = setInterval(function() {
         ctx.fillText("Then TAP to take a photo.", HUD_X / 3, HUD_Y * 2);
         ctx.fillText("Photo processing may take", HUD_X / 3, HUD_Y * 4);
         ctx.fillText("       up to 10 seconds!", HUD_X / 3, HUD_Y * 5);
+        ctx.fillStyle = BLUE;
+        ctx.fillText("PRIVACY NOTICE: This educational project", HUD_X / 3, HUD_Y * 7);
+        ctx.fillText("does not collect ANY data about you.", HUD_X / 3, HUD_Y * 8);
+        ctx.fillText("Images created with this app do not", HUD_X / 3, HUD_Y * 9);
+        ctx.fillText("leave your phone, and are not accessible", HUD_X / 3, HUD_Y * 10);
+        ctx.fillText("by third parties.", HUD_X / 3, HUD_Y * 11);
+        ctx.fillText("The code is freely available for review at", HUD_X / 3, HUD_Y * 13);
+        ctx.fillText("https://github.com/Terkwood/vision", HUD_X / 3, HUD_Y * 14);
+
     }
  }, 50);
 
