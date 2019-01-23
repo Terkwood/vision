@@ -61,11 +61,6 @@ impl Component for State {
                 false
             }
             Msg::CanvasClicked(e) => {
-                js! {
-                    var canvas = document.querySelector("#canvas");
-                    logCursorPosition(canvas, @{e.clone()});
-                }
-
                 if download_button_clicked(e, self.download_button_position.clone()) {
                     js! {
                         console.log("DL CLICKED");
@@ -97,7 +92,7 @@ impl Component for State {
                 let image = ImageElement::new();
                 image.set_attribute("src", &data_url).unwrap();
 
-                let canvas: CanvasElement = get_canvas();
+                let canvas: CanvasElement = query_canvas();
                 let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
                 resize_canvas(&canvas);
 
@@ -156,13 +151,16 @@ impl Renderable<State> for State {
             }
         } else {
             html! {
-                <canvas id="canvas", onclick=|e| Msg::CanvasClicked(e),></canvas>
+                <div id="container",>
+                    <canvas id="canvas", onclick=|e| Msg::CanvasClicked(e),></canvas>
+                    <button id="download",>{ "DOWNLOAD" }</button>
+                </div>
             }
         }
     }
 }
 
-fn get_canvas() -> CanvasElement {
+fn query_canvas() -> CanvasElement {
     document()
         .query_selector("#canvas")
         .unwrap()
@@ -171,9 +169,21 @@ fn get_canvas() -> CanvasElement {
         .unwrap()
 }
 
-fn download_button_clicked(_e: ClickEvent, button_pos: Option<ButtonPosition>) -> bool {
+fn download_button_clicked(e: ClickEvent, button_pos: Option<ButtonPosition>) -> bool {
     match button_pos {
         None => false,
-        _ => unimplemented!(),
+        _ => {
+            let canvas = query_canvas();
+            let x = e.client_x() as f64 - canvas.get_bounding_client_rect().get_left();
+            let y = e.client_y() as f64 - canvas.get_bounding_client_rect().get_top();
+
+            let a = e.offset_x() as f64 - canvas.get_bounding_client_rect().get_left();
+            let b = e.offset_y() as f64 - canvas.get_bounding_client_rect().get_top();
+            js! {
+                console.log("Click at x: " + @{x} + " y: " + @{y});
+                console.log("Click at a: " + @{a} + " b: " + @{b});
+            }
+            false
+        },
     }
 }

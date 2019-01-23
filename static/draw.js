@@ -54,13 +54,15 @@ function drawButton(posCb, clickCb, imgSrc) {
     var ctx = canvas.getContext("2d");
     var img = new Image();
     img.onload = function() {
-        var dx = (canvas.offsetWidth / 6) - (img.width / 2);
+        console.log("Canvas offsetwidth " + canvas.offsetWidth);
+
+        //var dx = (canvas.offsetWidth / 6) - (img.width / 2);
+        var dx = 50;
         var dy = 7 * (canvas.offsetHeight / 8) - (img.height / 2);
 
-        console.log("YO " + dx + " " + dy);
-        ctx.drawImage(img, dx, dy);
+        console.log("Draw button x:" + dx + " y:" + dy + " w:" + img.width + " h:" + img.height);
+        ctx.drawImage(img, dx, dy, img.width, img.height);
         registerButtonEvents(canvas, img, dx, dy, clickCb);
-        
         
         if (posCb) {
             posCb([Math.round(dx), Math.round(dy), img.width, img.height]);
@@ -200,11 +202,4 @@ var PIXEL_RATIO = (function () {
     can.style.height = h + "px";
     can.getContext("2d").setTransform(ratio, 0, 0, ratio, 0, 0);
     return can;
-}
-
-function logCursorPosition(canvas, event) {
-    var rect = canvas.getBoundingClientRect();
-    var x = event.clientX - rect.left;
-    var y = event.clientY - rect.top;
-    console.log("x: " + x + " y: " + y);
 }
