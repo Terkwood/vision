@@ -128,17 +128,15 @@ fn resize_canvas(canvas: &CanvasElement) {
 impl Renderable<State> for State {
     fn view(&self) -> Html<Self> {
         match self.screen {
-            Screen::Splash =>
-                html! {
-                    <canvas id="canvas", onclick=|_e| Msg::SwapToVideo,></canvas>
-                },
-            Screen::Video =>
-                html! {
-                    <div>
-                        <video id="video", onclick=|_e| Msg::TakePicture,></video>
-                        <canvas id="canvas",></canvas>
-                    </div>
-                },
+            Screen::Splash => html! {
+                <canvas id="canvas", onclick=|_e| Msg::SwapToVideo,></canvas>
+            },
+            Screen::Video => html! {
+                <div>
+                    <video id="video", onclick=|_e| Msg::TakePicture,></video>
+                    <canvas id="canvas",></canvas>
+                </div>
+            },
             Screen::Snapshot => {
                 html! {
                     <div id="container",>
