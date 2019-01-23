@@ -18,9 +18,15 @@ pub enum Msg {
     DownloadButtonClicked,
 }
 
+pub enum Screen {
+    Splash,
+    Video,
+    Snapshot,
+}
+
 pub struct State {
     link: ComponentLink<State>,
-    video: bool,
+    screen: Screen,
     snapshot_data_url: Option<String>,
     download_button_position: Option<ButtonPosition>,
 }
@@ -40,7 +46,7 @@ impl Component for State {
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         State {
             link,
-            video: false,
+            screen: Screen::Splash,
             snapshot_data_url: None,
             download_button_position: None,
         }
@@ -60,7 +66,7 @@ impl Component for State {
                 false
             }
             Msg::SwapToVideo => {
-                self.video = true;
+                self.screen = Screen::Video;
                 js! {
                     swapToVideo();
                 }
@@ -78,7 +84,7 @@ impl Component for State {
                     var callback = @{js_cb};
                     takePicture(callback);
                 }
-                self.video = false;
+                self.screen = Screen::Snapshot;
                 true
             }
             Msg::PictureTaken(data_url) => {
@@ -121,24 +127,29 @@ fn resize_canvas(canvas: &CanvasElement) {
 
 impl Renderable<State> for State {
     fn view(&self) -> Html<Self> {
-        if self.video {
-            html! {
-                <div>
-                    <video id="video", onclick=|_e| Msg::TakePicture,></video>
-                    <canvas id="canvas",></canvas>
-                </div>
-            }
-        } else {
-            html! {
-                <div id="container",>
+        match self.screen {
+            Screen::Splash =>
+                html! {
                     <canvas id="canvas", onclick=|_e| Msg::SwapToVideo,></canvas>
-                    <button
-                        id="download",
-                        style="background: url(download-outline.png)",
-                        onclick=|_e| Msg::DownloadButtonClicked,>
-                        { "DOWNLOAD" }
-                    </button>
-                </div>
+                },
+            Screen::Video =>
+                html! {
+                    <div>
+                        <video id="video", onclick=|_e| Msg::TakePicture,></video>
+                        <canvas id="canvas",></canvas>
+                    </div>
+                },
+            Screen::Snapshot => {
+                html! {
+                    <div id="container",>
+                        <canvas id="canvas", onclick=|_e| Msg::SwapToVideo,></canvas>
+                        <button
+                            id="download",
+                            style="background: url(download-outline.png)",
+                            onclick=|_e| Msg::DownloadButtonClicked,>
+                        </button>
+                    </div>
+                }
             }
         }
     }
