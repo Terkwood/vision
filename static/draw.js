@@ -49,62 +49,7 @@ var readyCheck = setInterval(function() {
     }
  }, 50);
 
-function drawButton(posCb, clickCb, imgSrc) {
-    var canvas = document.querySelector("#canvas");
-    var ctx = canvas.getContext("2d");
-    var img = new Image();
-    img.onload = function() {
-        console.log("Canvas offsetwidth " + canvas.offsetWidth);
-
-        //var dx = (canvas.offsetWidth / 6) - (img.width / 2);
-        var dx = 50;
-        var dy = 7 * (canvas.offsetHeight / 8) - (img.height / 2);
-
-        console.log("Draw button x:" + dx + " y:" + dy + " w:" + img.width + " h:" + img.height);
-        ctx.drawImage(img, dx, dy, img.width, img.height);
-        registerButtonEvents(canvas, img, dx, dy, clickCb);
-        
-        if (posCb) {
-            posCb([Math.round(dx), Math.round(dy), img.width, img.height]);
-            posCb.drop();
-        }
-    };
-
-    img.src = imgSrc;
-}
-
-function registerButtonEvents(canvas, img, dx, dy, clickCb) {
-    var buttonPath = new Path2D();
-    buttonPath.rect(dx,dy,img.width,img.height);
-
-    canvas.onclick = function (e) {
-        var context = e.target.getContext('2d');
-        var coordX  = e.offsetX;
-        var coordY  = e.offsetY;
-        
-        if (context.isPointInPath(buttonPath, coordX, coordY)) {
-            clickCb(true);
-            clickCb.drop();
-            return;
-        }
-    }
-
-    canvas.onmousemove = function (e)
-    {
-        var context = e.target.getContext('2d');
-        var coordX  = e.offsetX;
-        var coordY  = e.offsetY;
-        
-        if (context.isPointInPath(buttonPath, coordX, coordY)) {
-            e.target.style.cursor = 'pointer';
-            return;
-        }
-        
-        e.target.style.cursor = 'default';
-    };
-}
-
-function snapshotBoundingBoxes(img, drawDlBtn) {
+function snapshotBoundingBoxes(img) {
     cocoSsd.load().then(model => {
         model.detect(img).then(predictions => {
             var canvas = document.querySelector("#canvas");
@@ -133,8 +78,6 @@ function snapshotBoundingBoxes(img, drawDlBtn) {
                 const TEXT_OFFSET = -10;
                 ctx.fillText(p.class, p.bbox[0], p.bbox[1] + TEXT_OFFSET);
             });
-
-            drawDlBtn();
         });
     });
 }

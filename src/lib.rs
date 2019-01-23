@@ -11,11 +11,11 @@ use stdweb::web::{document, CanvasRenderingContext2d};
 use yew::prelude::*;
 
 pub enum Msg {
-    CanvasClicked(ClickEvent),
+    SwapToVideo,
     TakePicture,
     PictureTaken(String), // dataURL for image
     DownloadButtonPos(Vec<u32>),
-    DownloadButtonClick(bool), // dummy bool ?
+    DownloadButtonClicked,
 }
 
 pub struct State {
@@ -48,7 +48,6 @@ impl Component for State {
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            Msg::DownloadButtonClick(_b) => unimplemented!(),
             Msg::DownloadButtonPos(p) => {
                 let p = ButtonPosition {
                     x: p[0],
@@ -60,21 +59,16 @@ impl Component for State {
                 self.download_button_position = Some(p);
                 false
             }
-            Msg::CanvasClicked(e) => {
-                if download_button_clicked(e, self.download_button_position.clone()) {
-                    js! {
-                        console.log("DL CLICKED");
-                    }
-                    false
-                } else {
-                    self.video = true;
-
-                    js! {
-                        swapToVideo();
-                    }
-
-                    true
+            Msg::SwapToVideo => {
+                self.video = true;
+                js! {
+                    swapToVideo();
                 }
+                true
+            }
+            Msg::DownloadButtonClicked => {
+                js!{console.log("Download button clicked");}
+                false
             }
             Msg::TakePicture => {
                 let cb: Callback<String> = self.link.send_back(Msg::PictureTaken);
@@ -96,15 +90,6 @@ impl Component for State {
                 let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
                 resize_canvas(&canvas);
 
-                let cb_dl_btn_pos = {
-                    let cb = self.link.send_back(Msg::DownloadButtonPos);
-                    move |p: Vec<u32>| cb.emit(p)
-                };
-                let cb_dl_btn_click = {
-                    let cb = self.link.send_back(Msg::CanvasClicked);
-                    move |e| cb.emit(e)
-                };
-
                 js! {
                     var img = @{image};
                     var cv = @{canvas};
@@ -119,13 +104,7 @@ impl Component for State {
                         ctx.font = FONT;
                         ctx.fillText("PROCESSING", HUD_X, HUD_Y);
 
-                        var drawDlBtn = function() {
-                            var cbDlBtnPos = @{cb_dl_btn_pos};
-                            var cbDlnBtnClick = @{cb_dl_btn_click};
-                            drawButton(cbDlBtnPos, cbDlnBtnClick, "download-outline.png");
-                        };
-
-                        snapshotBoundingBoxes(img, drawDlBtn);
+                        snapshotBoundingBoxes(img);
                     }
                 }
 
@@ -145,15 +124,15 @@ impl Renderable<State> for State {
         if self.video {
             html! {
                 <div>
-                    <video id="video", onclick=|_| Msg::TakePicture,></video>
+                    <video id="video", onclick=|_e| Msg::TakePicture,></video>
                     <canvas id="canvas",></canvas>
                 </div>
             }
         } else {
             html! {
                 <div id="container",>
-                    <canvas id="canvas", onclick=|e| Msg::CanvasClicked(e),></canvas>
-                    <button id="download",>{ "DOWNLOAD" }</button>
+                    <canvas id="canvas", onclick=|_e| Msg::SwapToVideo,></canvas>
+                    <button id="download", onclick=|_e| Msg::DownloadButtonClicked,>{ "DOWNLOAD" }</button>
                 </div>
             }
         }
@@ -167,23 +146,4 @@ fn query_canvas() -> CanvasElement {
         .unwrap()
         .try_into()
         .unwrap()
-}
-
-fn download_button_clicked(e: ClickEvent, button_pos: Option<ButtonPosition>) -> bool {
-    match button_pos {
-        None => false,
-        _ => {
-            let canvas = query_canvas();
-            let x = e.client_x() as f64 - canvas.get_bounding_client_rect().get_left();
-            let y = e.client_y() as f64 - canvas.get_bounding_client_rect().get_top();
-
-            let a = e.offset_x() as f64 - canvas.get_bounding_client_rect().get_left();
-            let b = e.offset_y() as f64 - canvas.get_bounding_client_rect().get_top();
-            js! {
-                console.log("Click at x: " + @{x} + " y: " + @{y});
-                console.log("Click at a: " + @{a} + " b: " + @{b});
-            }
-            false
-        },
-    }
 }
