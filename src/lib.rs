@@ -132,7 +132,12 @@ impl Renderable<State> for State {
             html! {
                 <div id="container",>
                     <canvas id="canvas", onclick=|_e| Msg::SwapToVideo,></canvas>
-                    <button id="download", onclick=|_e| Msg::DownloadButtonClicked,>{ "DOWNLOAD" }</button>
+                    <button
+                        id="download",
+                        style="background: url(download-outline.png)",
+                        onclick=|_e| Msg::DownloadButtonClicked,>
+                        { "DOWNLOAD" }
+                    </button>
                 </div>
             }
         }
