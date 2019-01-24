@@ -73,7 +73,20 @@ impl Component for State {
                 true
             }
             Msg::DownloadButtonClicked => {
+
+                let download = document().get_element_by_id("download-link").unwrap();
+                let canvas = query_canvas();
+                let img = canvas.to_data_url(Some("image/jpeg"),  None)
+                    .unwrap().replace("image/jpeg", "image/octet-stream");
+                download.set_attribute("href", &img).unwrap();
+                
                 js!{console.log("Download button clicked");}
+                /*
+                    var canvas = document.getElementById("mycanvas");
+    var img    = canvas.toDataURL("image/png");
+    document.write('<img src="'+img+'"/>');
+                */
+
                 false
             }
             Msg::TakePicture => {
@@ -141,11 +154,11 @@ impl Renderable<State> for State {
                 html! {
                     <div id="container",>
                         <canvas id="canvas", onclick=|_e| Msg::SwapToVideo,></canvas>
-                        <button
-                            id="download",
+                        <a id="download-link", download="vision.jpg",><button
+                            id="download-button",
                             style="background: url(download-outline.png)",
                             onclick=|_e| Msg::DownloadButtonClicked,>
-                        </button>
+                        </button></a>
                     </div>
                 }
             }
