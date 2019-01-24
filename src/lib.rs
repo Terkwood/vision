@@ -73,19 +73,20 @@ impl Component for State {
                 true
             }
             Msg::DownloadButtonClicked => {
-
                 let download = document().get_element_by_id("download-link").unwrap();
                 let canvas = query_canvas();
-                let img = canvas.to_data_url(Some("image/jpeg"),  None)
-                    .unwrap().replace("image/jpeg", "image/octet-stream");
+                let img = canvas
+                    .to_data_url(Some("image/jpeg"), None)
+                    .unwrap()
+                    .replace("image/jpeg", "image/octet-stream");
                 download.set_attribute("href", &img).unwrap();
-                
+
                 js!{console.log("Download button clicked");}
                 /*
-                    var canvas = document.getElementById("mycanvas");
-    var img    = canvas.toDataURL("image/png");
-    document.write('<img src="'+img+'"/>');
-                */
+                                var canvas = document.getElementById("mycanvas");
+                var img    = canvas.toDataURL("image/png");
+                document.write('<img src="'+img+'"/>');
+                            */
 
                 false
             }
