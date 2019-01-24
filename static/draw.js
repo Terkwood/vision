@@ -47,7 +47,7 @@ var readyCheck = setInterval(function() {
             privacyIdx += 1;
         });
     }
- }, 50);
+}, 50);
 
 function snapshotBoundingBoxes(img) {
     cocoSsd.load().then(model => {
@@ -136,8 +136,7 @@ var PIXEL_RATIO = (function () {
     return dpr / bsr;
 })();
 
-
- function alterHiDPICanvas(can, w, h, ratio) {
+function alterHiDPICanvas(can, w, h, ratio) {
     if (!ratio) { ratio = PIXEL_RATIO; }
     can.width = w * ratio;
     can.height = h * ratio;
