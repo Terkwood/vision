@@ -1,4 +1,4 @@
-#![recursion_limit = "128"]
+#![recursion_limit = "256"]
 #[macro_use]
 extern crate stdweb;
 #[macro_use]
@@ -11,15 +11,32 @@ use stdweb::web::{document, CanvasRenderingContext2d};
 use yew::prelude::*;
 
 pub enum Msg {
-    SwapToVideo(bool),
+    SwapToVideo,
     TakePicture,
     PictureTaken(String), // dataURL for image
+    DownloadButtonPos(Vec<u32>),
+    DownloadButtonClicked,
+}
+
+pub enum Screen {
+    Splash,
+    Video,
+    Snapshot,
 }
 
 pub struct State {
     link: ComponentLink<State>,
-    video: bool,
+    screen: Screen,
     snapshot_data_url: Option<String>,
+    download_button_position: Option<ButtonPosition>,
+}
+
+#[derive(Clone)]
+pub struct ButtonPosition {
+    x: u32,
+    y: u32,
+    width: u32,
+    height: u32,
 }
 
 impl Component for State {
@@ -29,21 +46,49 @@ impl Component for State {
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         State {
             link,
-            video: false,
+            screen: Screen::Splash,
             snapshot_data_url: None,
+            download_button_position: None,
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            Msg::SwapToVideo(b) => {
-                self.video = b;
-                if b {
-                    js! {
-                        swapToVideo();
-                    }
+            Msg::DownloadButtonPos(p) => {
+                let p = ButtonPosition {
+                    x: p[0],
+                    y: p[1],
+                    width: p[2],
+                    height: p[3],
+                };
+
+                self.download_button_position = Some(p);
+                false
+            }
+            Msg::SwapToVideo => {
+                self.screen = Screen::Video;
+                js! {
+                    swapToVideo();
                 }
                 true
+            }
+            Msg::DownloadButtonClicked => {
+                let download = document().get_element_by_id("download-link").unwrap();
+                let canvas = query_canvas();
+                let img = canvas
+                    .to_data_url(Some("image/jpeg"), None)
+                    .unwrap()
+                    .replace("image/jpeg", "image/octet-stream");
+                download.set_attribute("href", &img).unwrap();
+
+                js!{console.log("Download button clicked");}
+                /*
+                                var canvas = document.getElementById("mycanvas");
+                var img    = canvas.toDataURL("image/png");
+                document.write('<img src="'+img+'"/>');
+                            */
+
+                false
             }
             Msg::TakePicture => {
                 let cb: Callback<String> = self.link.send_back(Msg::PictureTaken);
@@ -53,7 +98,7 @@ impl Component for State {
                     var callback = @{js_cb};
                     takePicture(callback);
                 }
-                self.video = false;
+                self.screen = Screen::Snapshot;
                 true
             }
             Msg::PictureTaken(data_url) => {
@@ -61,7 +106,7 @@ impl Component for State {
                 let image = ImageElement::new();
                 image.set_attribute("src", &data_url).unwrap();
 
-                let canvas: CanvasElement = get_canvas();
+                let canvas: CanvasElement = query_canvas();
                 let context: CanvasRenderingContext2d = canvas.get_context().unwrap();
                 resize_canvas(&canvas);
 
@@ -78,7 +123,8 @@ impl Component for State {
                         ctx.fillStyle = GREEN;
                         ctx.font = FONT;
                         ctx.fillText("PROCESSING", HUD_X, HUD_Y);
-                        snapshotBoundingBoxes(img, 1.0, 1.0);
+
+                        snapshotBoundingBoxes(img);
                     }
                 }
 
@@ -95,22 +141,33 @@ fn resize_canvas(canvas: &CanvasElement) {
 
 impl Renderable<State> for State {
     fn view(&self) -> Html<Self> {
-        if self.video {
-            html! {
+        match self.screen {
+            Screen::Splash => html! {
+                <canvas id="canvas", onclick=|_e| Msg::SwapToVideo,></canvas>
+            },
+            Screen::Video => html! {
                 <div>
-                    <video id="video", onclick=|_| Msg::TakePicture,></video>
+                    <video id="video", onclick=|_e| Msg::TakePicture,></video>
                     <canvas id="canvas",></canvas>
                 </div>
-            }
-        } else {
-            html! {
-                <canvas id="canvas", onclick=|_| Msg::SwapToVideo(true),></canvas>
+            },
+            Screen::Snapshot => {
+                html! {
+                    <div id="container",>
+                        <canvas id="canvas", onclick=|_e| Msg::SwapToVideo,></canvas>
+                        <a id="download-link", download="vision.jpg",><button
+                            id="download-button",
+                            style="background: url(download-outline.png)",
+                            onclick=|_e| Msg::DownloadButtonClicked,>
+                        </button></a>
+                    </div>
+                }
             }
         }
     }
 }
 
-fn get_canvas() -> CanvasElement {
+fn query_canvas() -> CanvasElement {
     document()
         .query_selector("#canvas")
         .unwrap()
