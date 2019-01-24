@@ -7,6 +7,7 @@ extern crate yew;
 use stdweb::traits::*;
 use stdweb::unstable::TryInto;
 use stdweb::web::html_element::{CanvasElement, ImageElement};
+use stdweb::web::Date;
 use stdweb::web::{document, CanvasRenderingContext2d};
 use yew::prelude::*;
 
@@ -155,7 +156,7 @@ impl Renderable<State> for State {
                 html! {
                     <div id="container",>
                         <canvas id="canvas", onclick=|_e| Msg::SwapToVideo,></canvas>
-                        <a id="download-link", download="vision.jpg",><button
+                        <a id="download-link", download={download_file_name()},><button
                             id="download-button",
                             style="background: url(download-outline.png)",
                             onclick=|_e| Msg::DownloadButtonClicked,>
@@ -165,6 +166,11 @@ impl Renderable<State> for State {
             }
         }
     }
+}
+
+fn download_file_name() -> String {
+    let to_secs = 1000;
+    format!("vision-{}.jpg", Date::now() as u64 / to_secs as u64)
 }
 
 fn query_canvas() -> CanvasElement {
