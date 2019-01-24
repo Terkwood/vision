@@ -11,25 +11,10 @@ use stdweb::web::Date;
 use stdweb::web::{document, CanvasRenderingContext2d};
 use yew::prelude::*;
 
-pub enum Msg {
-    SwapToVideo,
-    TakePicture,
-    PictureTaken(String), // dataURL for image
-    DownloadButtonPos(Vec<u32>),
-    DownloadButtonClicked,
-}
-
 pub enum Screen {
     Splash,
     Video,
     Snapshot,
-}
-
-pub struct State {
-    link: ComponentLink<State>,
-    screen: Screen,
-    snapshot_data_url: Option<String>,
-    download_button_position: Option<ButtonPosition>,
 }
 
 #[derive(Clone)]
@@ -38,6 +23,21 @@ pub struct ButtonPosition {
     y: u32,
     width: u32,
     height: u32,
+}
+
+pub enum Msg {
+    SwapToVideo,
+    TakePicture,
+    PictureTaken(String), // dataURL for image
+    DownloadButtonPos(Vec<u32>),
+    DownloadButtonClicked,
+}
+
+pub struct State {
+    link: ComponentLink<State>,
+    screen: Screen,
+    snapshot_data_url: Option<String>,
+    download_button_position: Option<ButtonPosition>,
 }
 
 impl Component for State {
@@ -81,13 +81,6 @@ impl Component for State {
                     .unwrap()
                     .replace("image/jpeg", "image/octet-stream");
                 download.set_attribute("href", &img).unwrap();
-
-                js!{console.log("Download button clicked");}
-                /*
-                                var canvas = document.getElementById("mycanvas");
-                var img    = canvas.toDataURL("image/png");
-                document.write('<img src="'+img+'"/>');
-                            */
 
                 false
             }
@@ -135,11 +128,6 @@ impl Component for State {
     }
 }
 
-fn resize_canvas(canvas: &CanvasElement) {
-    canvas.set_width(canvas.offset_width() as u32);
-    canvas.set_height(canvas.offset_height() as u32);
-}
-
 impl Renderable<State> for State {
     fn view(&self) -> Html<Self> {
         match self.screen {
@@ -166,6 +154,11 @@ impl Renderable<State> for State {
             }
         }
     }
+}
+
+fn resize_canvas(canvas: &CanvasElement) {
+    canvas.set_width(canvas.offset_width() as u32);
+    canvas.set_height(canvas.offset_height() as u32);
 }
 
 fn download_file_name() -> String {
