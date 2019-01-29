@@ -75,11 +75,25 @@ function snapshotBoundingBoxes(img) {
 
                 ctx.font = FONT;
                 ctx.fillStyle = color;
-                const TEXT_OFFSET = -10;
-                ctx.fillText(p.class, p.bbox[0], p.bbox[1] + TEXT_OFFSET);
+
+                var textPos = bbTextPosition(p.bbox[0], p.bbox[1], p.bbox[3]);
+                ctx.fillText(p.class, textPos.x, textPos.y);
             });
         });
     });
+}
+
+function bbTextPosition(x, y, height) {
+    const TEXT_OFFSET_X = 3;
+    const TEXT_OFFSET_Y = -10;
+    const TEXT_MIN_Y = 13;
+    var shiftX = x + TEXT_OFFSET_X;
+    var shiftY = y + TEXT_OFFSET_Y;
+    if (shiftY < TEXT_MIN_Y) {
+        return { x: shiftX, y: shiftY + height};
+    } else {
+        return { x: shiftX, y: shiftY };
+    }
 }
 
 function swapToVideo() {
