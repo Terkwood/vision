@@ -1,6 +1,6 @@
 [package]
 name = "vision"
-version = "0.3.1"
+version = "0.3.2-coco-puffed"
 authors = ["Terkwood <metaterkhorn@gmail.com>"]
 edition = "2018"
 
