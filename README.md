@@ -1,7 +1,5 @@
 # Vision app
 
-## 🚧 Caution: this project is under construction! 🚧
-
 Use your device's camera to run object detection on the world around you.
 
 ![Bounding box example](example.png)
