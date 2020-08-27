@@ -1,12 +1,12 @@
 [package]
-name = "vision"
-version = "0.3.2-coco-puffed"
 authors = ["Terkwood <metaterkhorn@gmail.com>"]
 edition = "2018"
+name = "vision"
+version = "0.3.3"
 
 [dependencies]
-stdweb = "0.4"
-yew = { git = "https://github.com/DenisKolodin/yew" }
+stdweb = "0.4.20"
+yew = "0.17.3"
 
 [profile.release]
 lto = true

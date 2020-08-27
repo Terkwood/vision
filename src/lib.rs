@@ -1,7 +1,6 @@
 #![recursion_limit = "256"]
 #[macro_use]
 extern crate stdweb;
-#[macro_use]
 extern crate yew;
 
 use stdweb::traits::*;
@@ -34,7 +33,7 @@ pub enum Msg {
 }
 
 pub struct State {
-    link: ComponentLink<State>,
+    link: ComponentLink<Self>,
     screen: Screen,
     snapshot_data_url: Option<String>,
     download_button_position: Option<ButtonPosition>,
@@ -85,7 +84,7 @@ impl Component for State {
                 false
             }
             Msg::TakePicture => {
-                let cb: Callback<String> = self.link.send_back(Msg::PictureTaken);
+                let cb: Callback<String> = self.link.callback(|s| Msg::PictureTaken(s));
                 let js_cb = move |data_url: String| cb.emit(data_url);
 
                 js! {
@@ -126,28 +125,37 @@ impl Component for State {
             }
         }
     }
-}
 
-impl Renderable<State> for State {
-    fn view(&self) -> Html<Self> {
+    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
+        false
+    }
+
+    fn view(&self) -> Html {
         match self.screen {
             Screen::Splash => html! {
-                <canvas id="canvas", onclick=|_e| Msg::SwapToVideo,></canvas>
+                <canvas
+                    id="canvas"
+                    onclick=self.link.callback(|_| Msg::SwapToVideo)></canvas>
             },
             Screen::Video => html! {
                 <div>
-                    <video id="video", onclick=|_e| Msg::TakePicture,></video>
+                    <video
+                        id="video"
+                        onclick=self.link.callback(|_| Msg::TakePicture)></video>
                     <canvas id="canvas",></canvas>
                 </div>
             },
             Screen::Snapshot => {
                 html! {
-                    <div id="container",>
-                        <canvas id="canvas", onclick=|_e| Msg::SwapToVideo,></canvas>
-                        <a id="download-link", download={download_file_name()},><button
-                            id="download-button",
-                            style="background: url(download-outline.png)",
-                            onclick=|_e| Msg::DownloadButtonClicked,>
+                    <div id="container">
+                        <canvas
+                            id="canvas"
+                            onclick=self.link.callback(|_e| Msg::SwapToVideo)></canvas>
+                        <a id="download-link"
+                            download={download_file_name()}><button
+                            id="download-button"
+                            style="background: url(download-outline.png)"
+                            onclick=self.link.callback(|_| Msg::DownloadButtonClicked)>
                         </button></a>
                     </div>
                 }
